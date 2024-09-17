@@ -1,5 +1,7 @@
 package kassandrafalsitta.u2w3d1.services;
 
+import kassandrafalsitta.u2w3d1.entities.Employee;
+import kassandrafalsitta.u2w3d1.entities.Reservation;
 import kassandrafalsitta.u2w3d1.entities.Travel;
 import kassandrafalsitta.u2w3d1.enums.StateTravel;
 import kassandrafalsitta.u2w3d1.exceptions.BadRequestException;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -93,4 +96,5 @@ public class TravelsService {
         return this.travelsRepository.save(found);
 
     }
+
 }

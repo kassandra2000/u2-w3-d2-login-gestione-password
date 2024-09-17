@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -79,7 +80,7 @@ public class ReservationsService {
         }
         UUID travelID = null;
         try {
-            employeeID = UUID.fromString(updatedReservation.travelID());
+            travelID = UUID.fromString(updatedReservation.travelID());
         } catch (DateTimeParseException e) {
             throw new BadRequestException("L'UUID del viaggio non è corretto");
         }
@@ -99,7 +100,14 @@ public class ReservationsService {
         return this.reservationsRepository.save(found);
     }
 
+
+
     public void findByIdAndDelete(UUID reservationId) {
         this.reservationsRepository.delete(this.findById(reservationId));
     }
+
+    public List<Reservation> findByEmployee(Employee employee) {
+        return this.reservationsRepository.findByEmployee(employee);
+    }
+
 }
