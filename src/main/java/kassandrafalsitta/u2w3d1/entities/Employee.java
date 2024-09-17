@@ -1,11 +1,15 @@
 package kassandrafalsitta.u2w3d1.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import kassandrafalsitta.u2w3d1.enums.Role;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,7 +18,8 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "employees")
-public class Employee {
+@JsonIgnoreProperties({"password", "role", "authorities", "enabled", "accountNonLocked", "accountNonExpired", "credentialsNonExpired"})
+public class Employee implements UserDetails {
         @Id
         @GeneratedValue
         @Setter(AccessLevel.NONE)
@@ -25,6 +30,8 @@ public class Employee {
         private String email;
         private String avatar;
         private String password;
+        @Enumerated(EnumType.STRING)
+        private Role role;
         //costruttore
 
         public Employee( String username, String name, String surname, String email, String avatar,String password) {
@@ -34,5 +41,12 @@ public class Employee {
                 this.email = email;
                 this.avatar = avatar;
                 this.password = password;
+                this.role = Role.EMPLOYEE;
         }
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+                return List.of(new SimpleGrantedAuthority(this.role.name()));
+        }
+
 }
