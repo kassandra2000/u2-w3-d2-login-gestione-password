@@ -7,6 +7,7 @@ import kassandrafalsitta.u2w3d1.exceptions.BadRequestException;
 import kassandrafalsitta.u2w3d1.exceptions.NotFoundException;
 import kassandrafalsitta.u2w3d1.payloads.EmployeeDTO;
 import kassandrafalsitta.u2w3d1.repositories.EmployeesRepository;
+import kassandrafalsitta.u2w3d1.tools.MailgunSender;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -31,6 +32,9 @@ public class EmployeesService {
     @Autowired
     private PasswordEncoder bcrypt;
 
+    @Autowired
+    private MailgunSender mailgunSender;
+
     public Page<Employee> findAll(int page, int size, String sortBy) {
         if (page > 100) page = 100;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
@@ -44,7 +48,11 @@ public class EmployeesService {
                 }
         );
         Employee employee = new Employee(body.username(), body.name(), body.surname(), body.email(), "https://ui-avatars.com/api/?name=" + body.name() + "+" + body.surname(),bcrypt.encode(body.password()));
-        return this.employeesRepository.save(employee);
+        Employee savedEmployee = this.employeesRepository.save(employee);
+
+        // 4. Invio email conferma registrazione
+        mailgunSender.sendRegistrationEmail(savedEmployee);
+        return savedEmployee ;
     }
 
     public Employee findById(UUID employeeId) {
